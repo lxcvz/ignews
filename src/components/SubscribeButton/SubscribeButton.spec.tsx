@@ -1,11 +1,11 @@
 import { render, screen, fireEvent } from '@testing-library/react'
-import { mocked } from 'ts-jest/utils'
 import { signIn, useSession } from 'next-auth/client'
+import { mocked } from 'ts-jest/utils'
 import { useRouter } from 'next/router'
 import { SubscribeButton } from '.'
 
-jest.mock('next-auth/client');
-jest.mock('next/router');
+jest.mock('next-auth/client')
+jest.mock('next/router')
 
 describe('SubscribeButton component', () => {
   it('renders correctly', () => {
@@ -26,40 +26,39 @@ describe('SubscribeButton component', () => {
 
     render(<SubscribeButton />)
 
-    const subscribeButton = screen.getByText('Subscribe now');
-
+    const subscribeButton = screen.getByText('Subscribe now')
     fireEvent.click(subscribeButton)
 
     expect(signInMocked).toHaveBeenCalled()
-  });
+  })
 
-  it('redirects tp posts when user already has a subscription', () => {
+  it('redirects to posts when user already has a subscription', () => {
     const useRouterMocked = mocked(useRouter)
     const useSessionMocked = mocked(useSession)
-    const pushMock = jest.fn()
+    const pushMocked = jest.fn()
 
     useSessionMocked.mockReturnValueOnce([
-      { 
-        user: { 
-          name: 'John Doe', 
-          email: 'john.doe@example.com' 
-        }, 
-        activeSubscription: 'fake-active-subscription',
-        expires: 'fake-expires' 
-      }, 
-      false
+      {
+        user: {
+          name: 'John Doe',
+          email: 'john.doe@example.com'
+        },
+        activeSubscription: 'jest-test',
+        expires: 'fake-test'
+      },
+      true
     ])
 
     useRouterMocked.mockReturnValueOnce({
-      push: pushMock
+      push: pushMocked
     } as any)
 
     render(<SubscribeButton />)
 
-    const subscribeButton = screen.getByText('Subscribe now');
-
+    const subscribeButton = screen.getByText('Subscribe now')
     fireEvent.click(subscribeButton)
 
-    expect(pushMock).toHaveBeenCalledWith('/posts')
-  });
+    expect(pushMocked).toHaveBeenCalled()
+    expect(pushMocked).toHaveBeenCalledWith('/posts')
+  })
 })
