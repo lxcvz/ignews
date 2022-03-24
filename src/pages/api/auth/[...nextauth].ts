@@ -1,9 +1,10 @@
 import { query as q } from 'faunadb'
 
-import NextAuth from 'next-auth'
-import Providers from 'next-auth/providers'
+import NextAuth from "next-auth"
+import { session } from 'next-auth/client'
+import Providers from "next-auth/providers"
 
-import { fauna } from '../../../services/fauna';
+import { fauna } from '../../../services/fauna'
 
 export default NextAuth({
   providers: [
@@ -13,14 +14,11 @@ export default NextAuth({
       scope: 'read:user'
     }),
   ],
-  secret: process.env.NEXTAUTH_SECRET,
-  session: {
-    jwt: true,
-    // Seconds - How long until an idle session expires and is no longer valid.
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-  },
+
   callbacks: {
     async session(session) {
+      session.user.email
+
       try {
         const userActiveSubscription = await fauna.query(
           q.Get(
@@ -47,17 +45,16 @@ export default NextAuth({
 
         return {
           ...session,
-          activeSubscription: userActiveSubscription
+          activeSubscription: userActiveSubscription,
         }
-      } catch (err) {
-        console.log(err)
-
+      } catch {
         return {
           ...session,
           activeSubscription: null,
         }
       }
     },
+
     async signIn(user, account, profile) {
       const { email } = user
 
@@ -88,7 +85,7 @@ export default NextAuth({
         return true
       } catch (err) {
         console.log(err)
-        return false
+        return false;
       }
     },
   }
