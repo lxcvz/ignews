@@ -6,6 +6,7 @@ import Providers from 'next-auth/providers'
 import { fauna } from '../../../services/fauna';
 
 export default NextAuth({
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     Providers.GitHub({
       clientId: process.env.GITHUB_CLIENT_ID,
@@ -38,7 +39,7 @@ export default NextAuth({
             ])
           )
         )
-  
+
         return {
           ...session,
           activeSubscription: userActiveSubscription
